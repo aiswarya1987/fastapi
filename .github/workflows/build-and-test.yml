@@ -1,0 +1,44 @@
+name: FASTAPI CI/CD
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - npe
+    
+  pull_request:
+    branches: 
+      - main
+      
+env:
+   DOCKER_IMAGE: ghcr.io/${{ github.repositry }}
+   K8S_NAMESPACE: Staging
+   PYTHON_VERSION: "3.11"
+   APP_PORT: 8080
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write 
+
+    steps:
+    - name: Checkout FastAPI Repo
+    - uses: actions/checkout@v4
+
+    - name: Set Up Python
+    - uses: actions/setup-python@v5
+      with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Run Test Suite
+      run: pytest
+
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
