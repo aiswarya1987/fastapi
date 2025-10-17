@@ -15,7 +15,7 @@ env:
    K8S_NAMESPACE: Staging
    PYTHON_VERSION: "3.11"
    APP_PORT: 8080
-   IMAGE_NAME: ${{ github.repository_owner }}/FastAPI
+   IMAGE_NAME: ${{ github.repository_owner }}/fastapi
    IMAGE_TAG: ${{ github.sha }}
 
 jobs:
