@@ -26,19 +26,37 @@ jobs:
       packages: write 
 
     steps:
-    - name: Checkout Repo
-    - uses: actions/checkout@v4
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+  
+      - name: Set Up Python
+        uses: actions/setup-python@v5
+        with:
+            python-version: ${{ env.PYTHON_VERSION }}
+  
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+  
+      - name: Run Test Suite
+        run: pytest
 
-    - name: Set Up Python
-    - uses: actions/setup-python@v5
-      with:
-          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Login in to GitHub Container Registry
+        uses: actions/setup-python@v5
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Install dependencies
-      run: pip install -r requirements.txt
-
-    - name: Run Test Suite
-      run: pytest
-
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_IMAGE }}
+      
+      - name: Build and publish Docker image
+        uses: docker/build-and-publish-actions@v5
+        id: docker-build
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.output.tags }}
