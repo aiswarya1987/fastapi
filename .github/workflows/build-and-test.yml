@@ -54,7 +54,7 @@ jobs:
           images: ${{ env.DOCKER_IMAGE }}
       
       - name: Build and publish Docker image
-        uses: docker/build-and-publish-actions@v5
+        uses: docker/build-and-publish-action@v6
         id: docker-build
         with:
           context: .
