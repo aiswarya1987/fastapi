@@ -16,25 +16,25 @@ spec:
         app: fastapi-service
     spec:
       containers:
-        -name: fastapi-container
-        image: ghcr.io/aiswarya1987/TemenosProject:_IMAGE_TAG_ 
-        ports:
-          - containerPort: 8080
-        env:
+        - name: fastapi-container
+          image: ghcr.io/aiswarya1987/TemenosProject:$IMAGE_TAG 
+          ports:
+            - containerPort: 8080
+          env:
           - name: PORT
             value: "8080"
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 10
-          periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
         resources:
           requests:
             cpu: "100m"
