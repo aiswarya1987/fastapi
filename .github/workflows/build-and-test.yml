@@ -89,13 +89,18 @@ jobs:
         uses: azure/setup-kubectl@v4
         with:
           version: 'v1.30.0'
-
+      - name: Start Minikube
+        run: minikube start
+        
       - name: configure kubeconfig
-        run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+         mkdir -p $HOME/.kube
+         minikube kubeconfig > $HOME/.kube/config
+         echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
+       # run: |
+       #   mkdir -p $HOME/.kube
+       #   echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
+       # env:
+       #   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
 
       - name: Set KUBECONFIG
         run: echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
