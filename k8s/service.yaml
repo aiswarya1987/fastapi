@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-service
+  namespace: staging
+spec:
+  selector:
+    app: fastapi-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: Nodeport #Loadbalancer
