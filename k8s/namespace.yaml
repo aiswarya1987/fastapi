@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: staging
   labels:
-  environment: staging
+    environment: staging
