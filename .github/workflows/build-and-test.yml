@@ -93,17 +93,16 @@ jobs:
         run: minikube start
         
       - name: configure kubeconfig
-         mkdir -p $HOME/.kube
-         minikube kubeconfig > $HOME/.kube/config
-         echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
+        run: |
+           mkdir -p $HOME/.kube
+           minikube kubeconfig > $HOME/.kube/config
+           echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
+           
        # run: |
        #   mkdir -p $HOME/.kube
        #   echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
        # env:
        #   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-
-      - name: Set KUBECONFIG
-        run: echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
         
       - name: Deploy to K8s
         run: |
