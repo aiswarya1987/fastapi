@@ -19,9 +19,7 @@ env:
    IMAGE_TAG: ${{ github.sha }}
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -77,3 +75,31 @@ jobs:
           format: 'table'
           exit-code: '1'
           severity: 'CRITICAL,HIGH'
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - name: setup kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: 'v1.30.0'
+
+      - name: configure kubeconfig
+        run: |
+          mkdir -p $HOME/ .kube
+          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/ .kube/config
+
+      - name: Deploy to K8s
+        run: |
+          kubectl apply -f k8s/namespace.yaml
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+      
+    
+    
