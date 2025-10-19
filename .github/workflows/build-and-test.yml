@@ -92,14 +92,13 @@ jobs:
 
       - name: configure kubeconfig
         run: |
-          mkdir -p $HOME/ .kube
-          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/ .kube/config
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
 
       - name: Deploy to K8s
         run: |
           kubectl apply -f k8s/namespace.yaml
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
-      
-    
-    
+      # to deploy only the image tag
+  
