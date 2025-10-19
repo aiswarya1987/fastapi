@@ -93,9 +93,7 @@ jobs:
         run: minikube start
         
       - name: configure kubeconfig
-        run: |
-           mkdir -p $HOME/.kube
-           minikube kubeconfig > $HOME/.kube/config
+        run: | 
            echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
            
        # run: |
