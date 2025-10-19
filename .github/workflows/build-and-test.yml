@@ -104,8 +104,12 @@ jobs:
         
       - name: Deploy to K8s
         run: |
-          kubectl apply -f k8s/namespace.yaml
+          envsubst < k8s/namespace.yaml > k8s/namespace.final.yaml
+          
+          kubectl apply -f k8s/namespace.final.yaml
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
+        env:
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
       # to deploy only the image tag
   
