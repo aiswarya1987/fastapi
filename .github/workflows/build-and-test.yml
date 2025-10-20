@@ -34,21 +34,21 @@ jobs:
         with:
             python-version: ${{ env.PYTHON_VERSION }}
 
-     # - name: Login to Azure using OIDC
-      #  uses: azure/login@v2
-       # with:
-        #  client-id: ${{ secrets.AZURE_CLIENT_ID }}
-         # tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          #subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          # enable-AzPSSession: false
+      - name: Login to Azure using OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: false
 
-      #- name: Fetch SQ token from Azure Key Vault
-       # id: keyvault
-       # uses: azure/keyvalut@v2
-      #  with:
-      #    keyvault: "fastapivault"
-      #    secrets: |
-       #     SonarToken
+      - name: Fetch SQ token from Azure Key Vault
+        id: keyvault
+        uses: azure/keyvalut@v2
+        with:
+          keyvault: "fastapivault"
+          secrets: |
+            SonarToken
         
       - name: Install dependencies
         run: pip install -r requirements.txt
@@ -57,25 +57,25 @@ jobs:
       - name: Run Test Suite
         run: pytest
         continue-on-error: false
-        # | pytest --cov=. --cov-report.xml:coverage.xml
+         | pytest --cov=. --cov-report.xml:coverage.xml
 
-     # - name: SQ Scan
-     #   uses: SonarSource/sonarqube-scan-action@v2
-     #   with:
-     #   projectBaseDir: .
-        #env:
-         # SONAR_HOST_URL: ${{ secrets.SONAT_HOST_URL }}
-          #SONAR_TOKEN: ${{ steps.keyvault.outputs.SonarToken }}
+      - name: SQ Scan
+        uses: SonarSource/sonarqube-scan-action@v2
+        with: 
+          projectBaseDir: .
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAT_HOST_URL }}
+          SONAR_TOKEN: ${{ steps.keyvault.outputs.SonarToken }}
 
-      #- name: Run Checkmarx Scan
-      #  uses: Checkmarx/ast-github-action@v2
-      #  with:
-      #    base_uri: https://ast.checkmarx.net
-      #    cx_tenant: ${{ secrets.CX_TENANAT }}
-      #    cx_client_id: ${{ secrets.CX_CLIENT_ID }}
-      #    cx_client_secret: ${{ secrets.CX_CLIENT_SECRET }}
-      #    project_name: "fastapi"
-      #    branch: ${{ github.ref_name }}
+      - name: Run Checkmarx Scan
+        uses: Checkmarx/ast-github-action@v2
+        with:
+          base_uri: https://ast.checkmarx.net
+          cx_tenant: ${{ secrets.CX_TENANAT }}
+          cx_client_id: ${{ secrets.CX_CLIENT_ID }}
+          cx_client_secret: ${{ secrets.CX_CLIENT_SECRET }}
+          project_name: "fastapi"
+          branch: ${{ github.ref_name }}
       
       - name: Login in to GitHub Container Registry
         uses: docker/login-action@v2
@@ -151,11 +151,11 @@ jobs:
        # env:
        #     IMAGE_TAG: ${{ env.IMAGE_TAG }}
            
-      #- name: Wait for Deployment
-        #run: kubectl rollout status deployment/fastapi-deployment -n 
+      - name: Wait for Deployment
+        run: kubectl rollout status deployment/fastapi-deployment -n 
         
-     # - name: Get Service URL
-     #   run: minikube service fastapi -n staging --url
+      - name: Get Service URL
+        run: minikube service fastapi -n staging --url
         
       # to deploy only the image tag
   
