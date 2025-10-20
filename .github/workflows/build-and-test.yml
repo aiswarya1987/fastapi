@@ -33,14 +33,50 @@ jobs:
         uses: actions/setup-python@v5
         with:
             python-version: ${{ env.PYTHON_VERSION }}
-  
+
+     # - name: Login to Azure using OIDC
+      #  uses: azure/login@v2
+       # with:
+        #  client-id: ${{ secrets.AZURE_CLIENT_ID }}
+         # tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          #subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          # enable-AzPSSession: false
+
+      #- name: Fetch SQ token from Azure Key Vault
+       # id: keyvault
+       # uses: azure/keyvalut@v2
+      #  with:
+      #    keyvault: "fastapivault"
+      #    secrets: |
+       #     SonarToken
+        
       - name: Install dependencies
         run: pip install -r requirements.txt
-  
+        # pip install pytest pytest-cov
+        
       - name: Run Test Suite
         run: pytest
         continue-on-error: false
+        # | pytest --cov=. --cov-report.xml:coverage.xml
 
+     # - name: SQ Scan
+     #   uses: SonarSource/sonarqube-scan-action@v2
+     #   with:
+     #   projectBaseDir: .
+        #env:
+         # SONAR_HOST_URL: ${{ secrets.SONAT_HOST_URL }}
+          #SONAR_TOKEN: ${{ steps.keyvault.outputs.SonarToken }}
+
+      #- name: Run Checkmarx Scan
+      #  uses: Checkmarx/ast-github-action@v2
+      #  with:
+      #    base_uri: https://ast.checkmarx.net
+      #    cx_tenant: ${{ secrets.CX_TENANAT }}
+      #    cx_client_id: ${{ secrets.CX_CLIENT_ID }}
+      #    cx_client_secret: ${{ secrets.CX_CLIENT_SECRET }}
+      #    project_name: "fastapi"
+      #    branch: ${{ github.ref_name }}
+      
       - name: Login in to GitHub Container Registry
         uses: docker/login-action@v2
         with:
