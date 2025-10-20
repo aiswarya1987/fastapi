@@ -113,10 +113,7 @@ jobs:
           kubectl apply -f k8s/service.yaml
           env:
             IMAGE_TAG: ${{ env.IMAGE_TAG }}
-            K8S_NAMESPACE: ${{ env.K8S_NAMESPACE }}
-            IMAGE_NAME: ${{ env.IMAGE_NAME }}
-            APP_PORT: ${{ env.APP_PORT }}
-          
+           
       #- name: Wait for Deployment
         #run: kubectl rollout status deployment/fastapi-deployment -n 
         
