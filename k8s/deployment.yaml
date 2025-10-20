@@ -9,11 +9,11 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      app: fastapi
+      app: fastapi-service
   template:
     metadata:
       labels:
-        app: fastapi
+        app: fastapi-service
     spec:
       containers:
         - name: fastapi-container
@@ -42,5 +42,3 @@ spec:
         limits:
           cpu: "500m"
           memory: "256Mi"
-          
-    
