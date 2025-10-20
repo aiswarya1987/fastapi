@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: fastapi-container
-          image: ghcr.io/aiswarya1987/TemenosProject:$IMAGE_TAG 
+          image: ghcr.io/aiswarya1987/fastapi:$IMAGE_TAG 
           ports:
             - containerPort: 8080
           env:
