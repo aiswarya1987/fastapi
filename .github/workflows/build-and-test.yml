@@ -118,7 +118,7 @@ jobs:
         #run: kubectl rollout status deployment/fastapi-deployment -n 
         
       - name: Get Service URL
-        run: minikube service fastapi-service -n Staging --url
+        run: minikube service fastapi-service -n staging --url
         
       # to deploy only the image tag
   
