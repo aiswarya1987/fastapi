@@ -104,7 +104,7 @@ jobs:
         
       - name: Deploy to K8s
         run: |
-          envsubst < k8s/namespace.yaml > k8s/namespace.final.yaml
+          envsubst < k8s/deployment.yaml > k8s/deployment.final.yaml
           
           kubectl apply -f k8s/namespace.final.yaml
           kubectl apply -f k8s/deployment.yaml
