@@ -11,8 +11,8 @@ on:
       - main
       
 env:
-  # DOCKER_IMAGE: ghcr.io/${{ github.repositry }}
-   K8S_NAMESPACE: Staging
+   DOCKER_IMAGE: ghcr.io/${{ github.repository }}
+   K8S_NAMESPACE: staging
    PYTHON_VERSION: "3.11"
    APP_PORT: 8080
    IMAGE_NAME: ${{ github.repository_owner }}/fastapi
@@ -91,7 +91,7 @@ jobs:
         with:
           version: 'v1.30.0'
       - name: Start Minikube
-        run: minikube start
+        run: minikube start --driver=docker
         
       - name: configure kubeconfig
         run: | 
@@ -111,7 +111,17 @@ jobs:
           kubectl apply -f k8s/deployment.final.yaml
           #echo "kubectl apply -f k8s/deployment.final.yaml" >> $GITHUB_ENV
           kubectl apply -f k8s/service.yaml
-        env:
-          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          env:
+            IMAGE_TAG: ${{ env.IMAGE_TAG }}
+            K8S_NAMESPACE: ${{ env.K8S_NAMESPACE }}
+            IMAGE_NAME: ${{ env.IMAGE_NAME }}
+            APP_PORT: ${{ env.APP_PORT }}
+          
+      #- name: Wait for Deployment
+        #run: kubectl rollout status deployment/fastapi-deployment -n 
+        
+      - name: Get Service URL
+        run: minikube service fastapi-service -n Staging --url
+        
       # to deploy only the image tag
   
