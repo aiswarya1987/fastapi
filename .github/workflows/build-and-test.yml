@@ -109,7 +109,7 @@ jobs:
           
           kubectl apply -f k8s/namespace.yaml
           kubectl apply -f k8s/deployment.final.yaml
-          echo "kubectl apply -f k8s/deployment.final.yaml" >> $GITHUB_ENV
+          #echo "kubectl apply -f k8s/deployment.final.yaml" >> $GITHUB_ENV
           kubectl apply -f k8s/service.yaml
         env:
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
