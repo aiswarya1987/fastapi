@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: fastapi
-          image: temenosproject:latest
+          image: fastapi:latest
           ports:
             - containerPort: 8080
           env:
