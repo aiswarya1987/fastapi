@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: fastapi-container
-          image: ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} 
+          image: temenosproject:latest
           ports:
             - containerPort: 8080
           env:
