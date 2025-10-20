@@ -5,7 +5,7 @@ metadata:
   namespace: staging
 spec:
   selector:
-    app: fastapi-service
+    app: fastapi
   ports:
     - protocol: TCP
       port: 80
