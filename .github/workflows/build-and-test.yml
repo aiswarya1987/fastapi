@@ -63,7 +63,7 @@ jobs:
           context: .
           push: true
           #tags: ${{ steps.meta.outputs.tags }}
-          tags: fastapi:latest
+          tags: ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
          # outputs: type=local, dest=./image-output
 
       - name: Set image Variable
@@ -72,7 +72,7 @@ jobs:
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@0.20.0
         with:
-          image-ref: fastapi:latest
+          image-ref: ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           format: 'table'
           exit-code: '1'
           severity: 'CRITICAL,HIGH'
