@@ -5,74 +5,62 @@ on:
     branches-ignore:
       - main
       - npe
-    
   pull_request:
     branches: 
       - main
-      
+
 env:
-   DOCKER_IMAGE: ghcr.io/${{ github.repository }}
-   K8S_NAMESPACE: staging
-   PYTHON_VERSION: "3.11"
-   APP_PORT: 8080
-   IMAGE_NAME: ${{ github.repository_owner }}/fastapi
-   IMAGE_TAG: ${{ github.sha }}
+  DOCKER_IMAGE: ghcr.io/${{ github.repository }}
+  K8S_NAMESPACE: staging
+  PYTHON_VERSION: "3.11"
+  APP_PORT: 8080
+  IMAGE_NAME: ${{ github.repository_owner }}/fastapi
+  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write # needed to oush to /ghcr
+      packages: write
 
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-  
+
       - name: Set Up Python
         uses: actions/setup-python@v5
         with:
-            python-version: ${{ env.PYTHON_VERSION }}
-  
+          python-version: ${{ env.PYTHON_VERSION }}
+
       - name: Install dependencies
         run: pip install -r requirements.txt
-  
+
       - name: Run Test Suite
         run: pytest
-        continue-on-error: false
 
-      - name: Login in to GitHub Container Registry
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata for Docker (SHA tag)
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-           images: ${{ env.DOCKER_IMAGE }}
-           tags: |
-            type=sha,prefix= 
-
-      - name: Build and push Docker image
+      - name: Build and Push Docker image
         uses: docker/build-push-action@v6
         id: docker_build
         with:
           context: .
           push: true
-          #tags: ${{ steps.meta.outputs.tags }}
-          tags: ghcr.io/${{ env.IMAGE_NAME }}:${{env.IMAGE_TAG }}
-         # outputs: type=local, dest=./image-output
+          tags: ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
-      - name: Set image Variable
+      - name: Set image variable
         run: echo "IMAGE=ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
 
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@0.20.0
         with:
-          image-ref: ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          image-ref: ${{ env.IMAGE }}
           format: 'table'
           exit-code: '1'
           severity: 'CRITICAL,HIGH'
@@ -83,42 +71,36 @@ jobs:
     if: success()
 
     steps:
-      - name: checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: setup kubectl
+      - name: Setup kubectl
         uses: azure/setup-kubectl@v4
         with:
           version: 'v1.30.0'
+
       - name: Start Minikube
         run: minikube start --driver=docker
-        
-      - name: configure kubeconfig
-        run: | 
-           echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
-           
-       # run: |
-       #   mkdir -p $HOME/.kube
-       #   echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
-       # env:
-       #   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        
-      - name: Deploy to K8s
+
+      - name: Configure kubeconfig
+        run: echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
+
+      - name: Set Docker config for GHCR
         run: |
-          envsubst < k8s/deployment.yaml > k8s/deployment.final.yaml
+          echo "DOCKER_CONFIG_JSON=$(cat ~/.docker/config.json | base64 -w 0)" >> $GITHUB_ENV
+
+      - name: Deploy to Kubernetes
+        run: |
+          # Replace variables in deployment template
+          envsubst < k8s/deployment.yaml.template > k8s/deployment.yaml
           
-          kubectl apply -f k8s/namespace.yaml
-          kubectl apply -f k8s/deployment.final.yaml
-          #echo "kubectl apply -f k8s/deployment.final.yaml" >> $GITHUB_ENV
-          kubectl apply -f k8s/service.yaml
+          # Apply the deployment
+          kubectl apply -f k8s/deployment.yaml
+          
+          # Wait for rollout to complete
+         # kubectl rollout status deployment/fastapi-deployment -n ${{ env.K8S_NAMESPACE }}
         env:
-            IMAGE_TAG: ${{ env.IMAGE_TAG }}
-           
-      #- name: Wait for Deployment
-        #run: kubectl rollout status deployment/fastapi-deployment -n 
-        
-      - name: Get Service URL
-        run: minikube service fastapi-service -n Staging --url
-        
-      # to deploy only the image tag
-  
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          K8S_NAMESPACE: ${{ env.K8S_NAMESPACE }}
+          APP_PORT: ${{ env.APP_PORT }}
+          DOCKER_CONFIG_JSON: ${{ env.DOCKER_CONFIG_JSON }}
