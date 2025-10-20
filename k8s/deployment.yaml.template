@@ -1,0 +1,57 @@
+# k8s/deployment.yaml.template
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${K8S_NAMESPACE}
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ghcr-secret
+  namespace: ${K8S_NAMESPACE}
+type: kubernetes.io/dockerconfigjson
+data:
+  # Base64 encoded content of ~/.docker/config.json with GHCR credentials
+  .dockerconfigjson: ${DOCKER_CONFIG_JSON}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-deployment
+  namespace: ${K8S_NAMESPACE}
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fastapi
+  template:
+    metadata:
+      labels:
+        app: fastapi
+    spec:
+      containers:
+        - name: fastapi
+          image: ghcr.io/${{ env.IMAGE_NAME }}:${IMAGE_TAG}
+          ports:
+            - containerPort: ${APP_PORT}
+      imagePullSecrets:
+        - name: ghcr-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-service
+  namespace: ${K8S_NAMESPACE}
+spec:
+  selector:
+    app: fastapi
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: ${APP_PORT}
+  type: NodePort
