@@ -54,7 +54,7 @@ jobs:
         with:
            images: ${{ env.DOCKER_IMAGE }}
            tags: |
-            type=sha,prefix= #>
+            type=sha,prefix= 
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -62,7 +62,8 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ env.IMAGE_NAME }}:${{env.IMAGE_TAG }}
+          tags: ${{ steps.meta.outputs.tags }}
+          #tags: ghcr.io/${{ env.IMAGE_NAME }}:${{env.IMAGE_TAG }}
          # outputs: type=local, dest=./image-output
 
       - name: Set image Variable
@@ -108,6 +109,7 @@ jobs:
           
           kubectl apply -f k8s/namespace.yaml
           kubectl apply -f k8s/deployment.final.yaml
+          echo "kubectl apply -f k8s/deployment.final.yaml" >> $GITHUB_ENV
           kubectl apply -f k8s/service.yaml
         env:
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
