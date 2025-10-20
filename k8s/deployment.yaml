@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fastapi-deployment
+  name: fastapi
   namespace: staging
   labels:
-    app: fastapi-service
+    app: fastapi
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: fastapi-service
+      app: fastapi
   template:
     metadata:
       labels:
-        app: fastapi-service
+        app: fastapi
     spec:
       containers:
-        - name: fastapi-container
+        - name: fastapi
           image: temenosproject:latest
           ports:
             - containerPort: 8080
