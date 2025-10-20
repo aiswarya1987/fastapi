@@ -62,8 +62,8 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          #tags: ghcr.io/${{ env.IMAGE_NAME }}:${{env.IMAGE_TAG }}
+          #tags: ${{ steps.meta.outputs.tags }}
+          tags: ghcr.io/${{ env.IMAGE_NAME }}:${{env.IMAGE_TAG }}
          # outputs: type=local, dest=./image-output
 
       - name: Set image Variable
