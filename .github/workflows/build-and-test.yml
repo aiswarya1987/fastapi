@@ -106,8 +106,8 @@ jobs:
         run: |
           envsubst < k8s/deployment.yaml > k8s/deployment.final.yaml
           
-          kubectl apply -f k8s/namespace.final.yaml
-          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/namespace.yaml
+          kubectl apply -f k8s/deployment.final.yaml
           kubectl apply -f k8s/service.yaml
         env:
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
